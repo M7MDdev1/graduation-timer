@@ -3,7 +3,14 @@
 import { useEffect, useState } from "react";
 import texts from "../texts.json";
 
-const GRADUATION_DATE = new Date("2026-06-08T00:00:00");
+/** 2026-06-08 15:00 Arabia Standard Time (UTC+3) */
+const GRADUATION_DATE = new Date("2026-06-08T15:00:00+03:00");
+
+const RIYADH_TZ = "Asia/Riyadh";
+
+function dateInRiyadh(d: Date): string {
+  return d.toLocaleDateString("en-CA", { timeZone: RIYADH_TZ });
+}
 
 function getTimeLeft() {
   const now = new Date();
@@ -21,16 +28,10 @@ function getTimeLeft() {
   return { days, hours, minutes, seconds };
 }
 
+/** نفس يوم التخرج بتقويم السعودية (بعد انتهاء العد) */
 function isGraduationDay() {
   const now = new Date();
-  return (
-    now.toDateString() === GRADUATION_DATE.toDateString()
-  );
-}
-
-function isAfterGraduation() {
-  const now = new Date();
-  return now > GRADUATION_DATE;
+  return dateInRiyadh(now) === dateInRiyadh(GRADUATION_DATE);
 }
 
 export default function GraduationCountdown() {
@@ -103,11 +104,14 @@ export default function GraduationCountdown() {
               {isToday ? texts.graduationDay.badge : texts.afterGraduation.badge}
             </p>
             <p className="mt-2 text-amber-800">
-              {new Date("2026-06-08").toLocaleDateString("ar-SA", {
+              {GRADUATION_DATE.toLocaleString("ar-SA", {
+                timeZone: RIYADH_TZ,
                 weekday: "long",
                 year: "numeric",
                 month: "long",
                 day: "numeric",
+                hour: "numeric",
+                minute: "2-digit",
               })}
             </p>
           </div>
